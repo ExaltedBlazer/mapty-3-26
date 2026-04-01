@@ -97,7 +97,13 @@ class App {
   #mapZoomLevel = 13;
 
   constructor() {
+    // Get user's position
     this._getPosition();
+
+    // Get data from local storage
+    this._getLocalStorage();
+
+    // Attach event handlers
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField.bind(this));
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
@@ -117,7 +123,7 @@ class App {
     const { latitude } = position.coords;
     const { longitude } = position.coords;
 
-      console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
+      //console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
 
       const coords = [latitude, longitude];
 
@@ -141,6 +147,10 @@ class App {
 
       // Handling clicks on map
       this.#map.on('click', this._showForm.bind(this));
+
+      this.#workouts.forEach(work => {
+        this._renderWorkoutMarker(work);
+      });
   }
 //================= _showForm() method =================//
   _showForm(mapE) {
@@ -230,6 +240,9 @@ _hideForm() {
     // Clear input fields
     inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = '';
 
+    //set local storage to all workouts
+     this._setLocalStorage();
+
   }
   _renderWorkoutMarker(workout) {
     L.marker(workout.coords)
@@ -312,7 +325,30 @@ _hideForm() {
     });
 
     // Using the public interface
-    workout.click();
+    //workout.click();
+  }
+  _setLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+
+    //console.log(data);
+
+    if (!data) return;
+
+    this.#workouts = data;
+
+    this.#workouts.forEach(work => {
+      this._renderWorkout(work);
+      
+    });
+  }
+
+  reset() {
+    localStorage.removeItem('workouts');
+    location.reload();
   }
 }
 

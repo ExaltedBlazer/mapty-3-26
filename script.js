@@ -263,16 +263,23 @@ _hideForm() {
   _renderWorkout(workout) {
     
     let html = `<li class="workout workout--${workout.type}" data-id="${workout.id}">
-    <h2 class="workout__title">${workout.description}</h2>
+    <h2 class="workout__title">${workout.description} 
+      <span style="cursor: pointer; color: #ff0000; margin-left: 60px;" onclick="app.reset()">
+        Delete Workout
+      </span>
+    </h2>
+    
     <div class="workout__details">
       <span class="workout__icon">${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'}</span>
       <span class="workout__value">${workout.distance}</span>
       <span class="workout__unit">mi</span>
     </div>
     <div class="workout__details">
+      
       <span class="workout__icon">⏱</span>
       <span class="workout__value">${workout.duration}</span>
       <span class="workout__unit">min</span>
+      
     </div>
     `;
 
@@ -345,6 +352,12 @@ _hideForm() {
       
     });
   }
+
+  _deleteWorkout(workout) {
+    this.#workouts = this.#workouts.filter(w => w.id !== workout.id);
+    this._setLocalStorage();
+  }
+
 
   reset() {
     localStorage.removeItem('workouts');
